@@ -1,9 +1,15 @@
+import axios, {AxiosResponse} from 'axios'
 interface UserProps {
+  id?: number;
   name?: string;
   age?: number;
 }
-type Callback = () => void;
 
+type Callback = () => void;
+const BASE_URL = 'http://localhost:4000';
+
+
+// axios.delete(`${BASE_URL}/users/4`)
 export class User {
   events: {[key: string]: Callback[]} = {}
   constructor(private data: UserProps) {}
@@ -22,4 +28,27 @@ export class User {
     this.events[eventName] = handlers;
   }
 
+  trigger(eventName: string): void {
+    const handlers = this.events[eventName];
+
+    if (!handlers || handlers.length === 0) return;
+
+    handlers.forEach(callback => callback())
+  }
+
+  fecth(): void {
+    axios.get(`${BASE_URL}/users/${this.get('id')}`)
+    .then((response: AxiosResponse): void => {
+      this.set(response.data);
+    })
+  }
+
+  save(): void {
+    const id = this.get('id');
+    if(id) {
+      axios.put(`${BASE_URL}/users/${id}`, this.data)
+    } else {
+      axios.post(`${BASE_URL}/users`, this.data)
+    }
+  }
 }
