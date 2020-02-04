@@ -1,10 +1,8 @@
-import { User } from "./models/User";
+import { User } from './models/User';
 
-const user = new User({ name: 'itunu', age:0 });
-
-user.events.on('change', ()=> {
-  console.log('change!')
+const collection = User.buildUserCollection();
+collection.on('change', () => {
+  console.log(collection)
 })
 
-user.events.trigger('change')
-// user.save()
+collection.fetch();

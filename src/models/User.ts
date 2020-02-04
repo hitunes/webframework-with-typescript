@@ -1,5 +1,8 @@
+import { Collection } from './Collection';
+import { Model } from './Model';
+import { ApiSync } from './ApiSync';
 import { Eventing } from './Eventing';
-import { Sync } from './Sync';
+import { Attributes } from './Attributes';
 
 export interface UserProps {
   id?: number;
@@ -8,17 +11,21 @@ export interface UserProps {
 }
 
 const rootUrl = 'http://localhost:4000/users';
-export class User {
-  public events: Eventing = new Eventing();
-  public sync: Sync<UserProps> = new Sync(rootUrl)
-  constructor(private data: UserProps) {}
-
-  get(propName: string): (string | number) {
-    return this.data[propName]
+export class User extends Model<UserProps> {
+  static buildBuild(attrs: UserProps): User {
+    return new User(
+      new Attributes<UserProps>(attrs),
+      new Eventing(),
+      new ApiSync<UserProps>(rootUrl)
+    );
   }
 
-  set(update: UserProps): void {
-    Object.assign(this.data, update);
+  static buildUserCollection(): Collection<User, UserProps> {
+    return new Collection<User, UserProps>(
+      rootUrl,(json: UserProps) => User.buildBuild(json))
   }
 
+  // get isAdminUser(): boolean {
+  //   return this.get('id')=== 1;
+  // }
 }
