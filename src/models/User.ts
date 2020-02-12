@@ -25,6 +25,10 @@ export class User extends Model<UserProps> {
       rootUrl,(json: UserProps) => User.buildBuild(json))
   }
 
+  setRandomAge(): void {
+    const age = Math.round(Math.random() * 100)
+    this.set({age})
+  }
   // get isAdminUser(): boolean {
   //   return this.get('id')=== 1;
   // }
